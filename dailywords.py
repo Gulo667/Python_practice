@@ -4,6 +4,8 @@
 #my guess for now is to create a dictionary of the italian words with English meanings, but it could be created with a bit of more complex way:
 #for example, look out for the words in internet, and also find their meaning, and if the worls has already been leanrt, skip it.
 import random
+import os
+
 
 words_dict={
     'Guarriera':'fighter',
@@ -60,12 +62,30 @@ words_dict={
     "colpirti":"hit you",
             }
 #for the learnt words
-learn_words=[]
+LEARNED_FILE="learned.txt"
 
+#load learned words from file if file exists
+learn_words=[]
+if os.path.exists(LEARNED_FILE):
+    with open(LEARNED_FILE, 'r') as f:
+        learn_words=[line.strip() for line in f if line.strip()]
 #remaining words
-remaining_words = {k:v for k, v in words_dict.items() if k not in learn_words}
+remaining_words = [w for w in words_dict if w not in learn_words]
 
 #pick 5 new words every time:
-new_words=random.sample(list(remaining_words))
-print(learn_words)
-#ok, recheck tomorrow!
+new_words=to_pick=min(5, len(remaining_words))
+if to_pick==0:
+    print("baby, you've already learned all the words, add more words and continue")
+else:
+    new_words=random.sample(remaining_words, to_pick)
+
+#show the words and append to the file & list
+
+print("Today's new words:")
+with open(LEARNED_FILE, 'a') as opened_file:
+    for i, w in enumerate(new_words, start=1):
+        print(f"{i}. {w} - {words_dict[w]}")
+        opened_file.write(w + "\n")
+        learn_words.append(w)
+
+print("\nUpdated leaned words count:", len(learn_words))
